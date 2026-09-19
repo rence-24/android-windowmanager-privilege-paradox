@@ -18,7 +18,8 @@ The fundamental design contract of modern smartphone operating systems relies he
 This case study documents a Hybrid Ecosystem Privilege Paradox where the integration of an advanced multimodal artificial intelligence application environment—specifically operating as a core system-privileged component—unwittingly undermines this isolation contract. The vulnerability does not operate as an intentional platform code whitelist or an explicit bypass mechanism. Instead, it manifests due to an asynchronous lifecycle synchronization gap where background data capture channels remain running independently of client-side interface state rendering flags.
 
 
-<img width="840" height="431" alt="Screenshot 2026-09-18 154439(1)" src="https://github.com/user-attachments/assets/473dcd8a-cb24-4c91-a05e-9f298846de8a" />
+<img width="840" height="431" alt="Screenshot 2026-09-18 154439(1)" src="https://github.com/user-attachments/assets/b5f10ea4-dbf0-4e51-813d-8fe9cbc18041" />
+
 
 
 Figure 1 (Google Buganizer Administrative Header Matrix): Verified core lifecycle telemetry capture of the active vulnerability tracker inside the Google Issue Tracker repository. The authenticated data matrix confirms a verified priority classification of Priority: P2, severity allocation of Severity: S2, and a structural tracking status of Status: Won't fix (Infeasible). The operational logs explicitly reference active cross-layer development blockers and structural component silos within the internal security triage ecosystem.
