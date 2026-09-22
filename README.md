@@ -370,9 +370,9 @@ the precise backend storage architecture of conversation history.
 
 # XIII. CWE CLASSIFICATION
 
-Primary — CWE-213
+## Primary — CWE-213
 
-CWE-213: Exposure of Sensitive Information Due to Incompatible Policies
+**CWE-213: Exposure of Sensitive Information Due to Incompatible Policies**
 
 This is the primary classification because the documented behavior concerns the interaction of different privacy expectations and policies across components.
 
@@ -380,9 +380,9 @@ The application expects protected content to remain restricted while another sys
 
 The security concern therefore occurs at the policy interaction boundary.
 
-CWE-312
+## CWE-312 — Not Assigned
 
-Not assigned as a confirmed classification.
+CWE-312 is not assigned as a confirmed classification.
 
 Although sensitive information was observed in conversational/session context, the available evidence does not establish that the information was stored in cleartext in the technical sense required for CWE-312.
 
