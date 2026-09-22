@@ -1,201 +1,489 @@
-TECHNICAL CASE STUDY: AN ARCHITECTURAL BREAKDOWN OF A PRIVILEGE PARADOX ZERO-DAY IN ANDROID FRAMEWORK LIFECYCLE SYNCHRONIZATION
+# Android WindowManager Privacy-State Synchronization Observation
+
+A Technical Case Study of Protected Application Content and Multimodal Assistant Processing
 
 Author: Lawrence Bernales
 
-Date of Discovery: May 25, 2026
+Initial Observation: May 25, 2026
 
-Target Vulnerability Matrix: CWE-213 (Incompatible Policies), CWE-312 (Cleartext Storage)
-Platform Scope: Android 14, Android 15, and Android 16 Ecosystems
+Follow-up Diagnostics: September 2026
 
-ABSTRACT
+Platforms Tested: Android 14, Android 15, Android 16
 
-This paper details a structural vulnerability architecture defect discovered within the core Android WindowManager framework integration lifecycle synchronization boundaries. The defect permits a high-priority system-privileged overlay application allocation operating at a superior task layer to persistently execute asynchronous background graphics memory capture sessions. This operation bypasses standard application-level developer isolation privacy controls (FLAG_SECURE), resulting in a localized memory data cache persistence anomaly that facilitates a delayed exfiltration vector of sensitive user telemetry to remote cloud interaction server logging infrastructures.
+Abstract
 
-I. INTRODUCTION & EXECUTIVE SUMMARY
+This research documents an observed privacy-boundary issue involving Android application-level visual protection, system-level window and capture state, and multimodal assistant processing.
 
-The fundamental design contract of modern smartphone operating systems relies heavily on absolute strict sandboxing boundaries. In the Android platform architecture, developers protect financial interfaces, transaction authentication metrics, and private web sessions from dynamic sniffing mechanisms by enforcing the FLAG_SECURE window layout parameter.
+The investigation does not oppose Gemini Live, screen awareness, or multimodal assistant functionality. These features can provide legitimate accessibility and productivity capabilities.
 
-This case study documents a Hybrid Ecosystem Privilege Paradox where the integration of an advanced multimodal artificial intelligence application environment—specifically operating as a core system-privileged component—unwittingly undermines this isolation contract. The vulnerability does not operate as an intentional platform code whitelist or an explicit bypass mechanism. Instead, it manifests due to an asynchronous lifecycle synchronization gap where background data capture channels remain running independently of client-side interface state rendering flags.
+The security question examined here is narrower:
+
+When an application declares visual content as protected, does that privacy restriction remain consistently enforced across system-level capture, snapshot, and downstream multimodal processing during application-state transitions?
+
+During the original testing, Gemini Live was observed to identify sensitive visual information displayed within a tested application context. Subsequent testing and Android framework diagnostics were used to investigate the system state surrounding the behavior.
+
+The research does not claim access to AOSP source code, Google's internal Gemini implementation, or internal telemetry. Accordingly, the underlying architectural explanation is presented as a technical hypothesis based on observed behavior, rather than a confirmed source-code root cause.
+
+# I. SECURITY PRINCIPLE
+
+Android applications can use mechanisms such as FLAG_SECURE to communicate that sensitive visual content should receive protection from screenshots and related capture mechanisms.
+
+This protection is particularly important for applications handling:
+
+financial information;
+
+authentication information;
+
+personal information;
+
+account data;
+
+other sensitive visual content.
+
+The purpose of this research is not to argue that Gemini Live should be prevented from seeing screens generally.
+
+Instead:
+
+Multimodal functionality should continue to operate normally where permitted, while application-declared privacy restrictions should remain effective when protected content is encountered.
+
+The security concern therefore exists at the interaction boundary between otherwise legitimate components.
+
+# II. OBSERVED BEHAVIOR
+
+A. Original Testing
+
+The original testing was performed during May–August 2026 using Android devices and controlled application scenarios.
+
+Evidence included:
+
+screen recordings;
+
+screenshots;
+
+application-state observations;
+
+comparison between protected and non-protected contexts;
+
+Gemini Live visual/overlay behavior.
+
+The strongest impact evidence is behavioral.
+
+During one documented reproduction, Gemini Live was able to identify a sensitive financial value displayed within the tested application context.
+
+For public disclosure, actual credentials, OTPs, authentication values, and other secrets are intentionally omitted.
+
+B. Protected vs. Non-Protected Contexts
+
+Testing showed that application behavior differed depending on the privacy mechanisms implemented by the application.
+
+Protected application contexts could cause Gemini's visual access to become unavailable or restricted.
+
+Other application contexts did not necessarily provide the same protection.
+
+This difference motivated investigation into whether application privacy state and system-level visual processing state remain synchronized during transitions.
+
+# III. EVIDENCE CHRONOLOGY
+
+May–August 2026 — Original Evidence
+
+The original report and reproduction were based primarily on:
+
+controlled device testing;
+
+screen recordings;
+
+screenshots;
+
+observed Gemini Live behavior;
+
+application privacy behavior;
+
+comparison between different applications and Android environments.
+
+No claim is made that later ADB/Linux diagnostics were available during this original testing period.
+
+September 2026 — Follow-Up Diagnostics
+
+A laptop became available later in the investigation.
+
+Additional ADB/Linux diagnostics were then performed, including examination of:
+
+WindowManager task snapshots;
+
+TaskSnapshot;
+
+HardwareBuffer;
+
+mIsRealSnapshot;
+
+MediaProjection state;
+
+foreground application/task transitions.
+
+These diagnostics are presented as subsequent technical validation, not as evidence that existed during the original report.
+
+# IV. ANDROID FRAMEWORK OBSERVATIONS
+
+A. WindowManager State
+
+Observed framework telemetry included states such as:
 
 
-<img width="840" height="431" alt="Screenshot 2026-09-18 154439(1)" src="https://github.com/user-attachments/assets/b5f10ea4-dbf0-4e51-813d-8fe9cbc18041" />
 
-
-
-Figure 1 (Google Buganizer Administrative Header Matrix): Verified core lifecycle telemetry capture of the active vulnerability tracker inside the Google Issue Tracker repository. The authenticated data matrix confirms a verified priority classification of Priority: P2, severity allocation of Severity: S2, and a structural tracking status of Status: Won't fix (Infeasible). The operational logs explicitly reference active cross-layer development blockers and structural component silos within the internal security triage ecosystem.
-
-II. CHRONOLOGY OF VRP ENGAGEMENT & TRACKING INDICATORS
-
-To demonstrate systemic platform confirmation of the structural flaw parameters, the following empirical milestones were logged inside the vendor's issue tracking dependency graph (tracked under assigned VRP Ticket ID: 516437XXX [Redacted for Anti-Spam Compliance] and technical core base infrastructure configuration keys). The operational lifecycle of this vulnerability trace demonstrates a persistent architectural gap, meticulously documented across months of active validation hooks inside the Google Buganizer environment:
-
-May 25, 2026 (The System Discovery): Initial telemetry data and architectural analysis were formally submitted to the platform.
-
-May 26, 2026 (The Core Platform Lock): The Core Android OS Framework Team immediately verified the system-level severity under Component 190951. Recognizing a profound platform sandbox evasion, they bind the submission to an official Individual Contributor License Agreement (CLA) for the Android Open Source Project (AOSP) and establish core tracking dependency Blocker ID: 516437XXX [Redacted].
-
-May 29, 2026 (The Bureaucratic Redirection): The automated script framework account [Buganizer Bot]  executes an infrastructure component swap, routing the ticket away from Core OS teams and into Component 310426 (Alphabet Application Layer) under Hotlist:702027.
-
-June 26, 2026 (The Panic Reopen): Following a brief administrative attempt by product divisions to classify the data capture as a localized user-approved asset feature, a structured demonstration of the FLAG_SECURE boundary breach ...initiated an immediate triage escalation, resulting in the investigation being reopened approximately 40 minutes after the initial closure.
-
-June 29, 2026 (The Mitigation Proposal): Operating under secure AOSP CLA parameters, I formally submitted a production remediation blueprint focusing on a Context-Aware Privacy Interlock mapping framework inside WindowManagerService.java.
-
-July 21, 2026 (The Engineering Verdict / Comment #18): The core platform engineering architects formally execute reproduction loops, issuing a decisive logging entry confirming "Successfully Reproduced" regarding the framework lifecycle anomaly and its background screen capture persistence (mIsRealSnapshot=true).
-
-August 1, 2026 (The Abuse Verification Routing): [T&S Handler] moves the issue down to the Trust & Safety Team (Component 889286) to audit the severity via data retention rules.
-
-August 17, 2026 (The Secondary Escalation Track): Following an operational dispute on component boundaries, [VRP Handler] activated an internal re-evaluation route, tagging the case under tracking framework Hotlist:5459382 to re-examine component assignments and policy applicability.
-
-September 16, 2026 (The Platform Coincidence Preview): Google Developers Blog officially announces "Agent Anomaly Detection" in Private Preview to address the explicit Identity and Privilege Abuse (ASI03) risks proven by this case].
-
-September 18, 2026 (The Final Telemetry Injection & Appeal Record): Operating under the assumption of an active re-evaluation window, I formally submitted raw operating system terminal logs, dumpsys memory telemetry, and cleartext cloud-history exfiltration matrices (Comment #28), establishing definitive historical priority for the structural framework resolution.
-
-September 19, 2026 (The Final Triage Dismissal / Comment #29): The Trust & Safety team issued a definitive administrative response (Comment #29), declaring the issue "Infeasible / Out of Scope" without addressing the submitted AOSP core telemetry or persistent memory cache snapshots (mIsRealSnapshot=true). This concluded internal VRP engagement, establishing procedural grounds for public defensive disclosure after 117+ days of responsible reporting.
-
-III. ARCHITECTURAL ROOT CAUSE ANALYSIS (THE PRIVILEGE PARADOX)
-The underlying defect operates as an asynchronous structural breakdown between the application-level presentation framework and the core system server layout management layers:
-
-A. The Interface Illusion vs. The Privilege Leak
-
-When navigating into highly hardened execution boundaries (such as a banking interface or an incognito web layout), the client-side presentation layer successfully intercepts the top focus window mutation event. The user interface mutates its visible state metrics to hidden (mViewVisibility=0x8  View.GONE).
-
-However, because the advanced multimodal assistant pipeline functions as an administrative system-privileged asset layer operating layout rules at mBaseLayer=21000, it sits outside standard client task cycle lifecycles. Due to a failure in application-to-platform lifecycle hooks, the main system_server core engine remains unnotified to concurrently terminate or restrict the underlying background session processing tokens.
-
-B. Asynchronous Telemetry Log Breakdown
-
-While the user interface visually claims complete blindness, the lower-level systems graphics pipeline controlled via MEDIA_PROJECTION_MANAGER completely fails to dynamically revoke active frame scanning permissions (TYPE_SCREEN_CAPTURE).
-
-[TELEMETRY TRACE OUTPUT: adb shell dumpsys window windows]
-package=com.google.android.googlequicksearchbox (uid=10116)
-mBaseLayer=21000 
+mBaseLayer=21000
 mSnapshot=android.hardware.HardwareBuffer@...
 mIsRealSnapshot=true
 
-As captured via direct terminal debugging outputs, the active SnapshotCache task maps continuously into live graphics processing memory. The entry mIsRealSnapshot=true acts as absolute engineering proof that the hardware graphics buffer is persistently copying and retaining active, unmasked visual data frames in memory cache long after the application bubble has disappeared from the user's focus.
+The 21000 value is treated only as an observed WindowManager layer/state value.
 
-C. Platform Context: The Criticality of Window Isolation & Browser WebViews
+It is not presented as proof that the layer itself represents an unauthorized privilege.
 
-To prevent the administrative mischaracterization of this framework flaw as a standardized application-layer utility feature, the vulnerability must be audited through the structural core rules governing the Android Window Management architecture:
+Similarly, mIsRealSnapshot=true is treated as framework telemetry describing snapshot state.
 
-The Inviolable Android Sandbox Rule: In mobile operating system engineering, security is entirely dictated by strict process and window boundaries. Financial institutions heavily rely on FLAG_SECURE as a formal, legally binding platform-level instruction to the window manager subsystem. The absolute boundary condition of this protocol states: Under no circumstances should any concurrent process capture, cache, or maintain rendering visibility over the protected coordinates, regardless of global user application intent or high-priority execution allocations.
+It is not treated as standalone proof that a particular protected frame was delivered to Gemini.
 
-The Hybrid WebView & Web Browser Pipeline Hazard: The core architectural defect shifts from a localized presentation anomaly to a profound ecosystem threat during transitions into unhardened browser context engines or application WebViews. While banking sandboxes are natively hardened, a significant portion of contemporary financial execution lifecycles—such as dynamic e-commerce checkouts, OAuth verification states, and auxiliary web rendering pages—operate inside asynchronous WebView contexts.
+B. MediaProjection State
 
-The Destructive Cascade: Because the platform completely fails to execute synchronous frame restrictions during foreground activity transitions, the unmasked graphics cache memory buffer (mIsRealSnapshot=true) remains floating in memory. The precise millisecond the user navigates into an unhardened web browser frame, the persistent mBaseLayer=21000 asset flushes and exfiltrates the structural session footprint directly into the remote server backend. This validates that the failure is a systemic boundary evasion that completely strips third-party financial applications of their regulatory security protections.
-
-D. Standalone Severity Framework: Independent Ambient Monitoring Violation
-
-To establish absolute architectural non-compliance, the severity of this vulnerability is not contingent upon the downstream exfiltration of plain-text financial credentials. The core processing mechanics exhibit a severe standalone platform violation independently of materialized data leaks:
-
-The Zero-Visibility Sensor Contract: The fundamental security baseline of contemporary mobile operating systems mandates that continuous access to privacy-sensitive hardware tokens—specifically real-time screen display recording (TYPE_SCREEN_CAPTURE) and core audio acquisition hooks—must be strictly bound to active user interface execution states. If an application framework transitions into a hidden visual state (mViewVisibility=0x8 View.GONE), any persistent runtime extraction function represents an unmitigated Security Boundary Evasion.
-
-The Ambient Surveillance Threat (Auto-Mic Eavesdropping): By permitting the system-privileged overlay service allocation (mBaseLayer=21000) to maintain active token captures and microphone recording parameters completely decoupled from layout visibility hooks, the platform introduces a structural Eavesdropping and Unauthorized Ambient Monitoring Loophole. The device owner is presented with the dynamic illusion of absolute privacy, while the underbelly framework silently retains active sensor feeds.
-
-The Invariant Verdict: This system privilege anomaly transforms a highly trusted application component into a functional background eavesdropping tool without the user’s awareness or valid structural context prompts. Consequently, even in the absolute absence of a banking data breach, the persistence behavior itself (successfully reproduced in Comment #18) constitutes a high-severity framework violation that shatters the underlying security model of the AOSP architecture.
-
-IV. THE MATERIALIZED RISK (THE CONTEXT DISCONNECT)
-
-The severe architectural hazard lies in the Delayed Exfiltration Vector. Because the execution lifecycle loops are asynchronously decoupled, the system permits a localized memory cache capture of the secure canvas to persist in the background.
-
-A. Vector A: Delayed Memory Cache Persistence (Background Buffer Retention)
-
-When a user navigates away from an explicitly hardened financial interface (e.g., Maya, Uno Bank, or Chrome Incognito), the core system_server fails to synchronously terminate the active graphics buffer allocation. Instead of clearing or masking the secure canvas, the underlying framework retains an unmasked hardware snapshot (mIsRealSnapshot=true) floating inside graphics memory (android.hardware.HardwareBuffer). Because the privileged assistant overlay (mBaseLayer=21000) remains active, this residual snapshot cache persists silently in memory without triggering visual indicators to the user, creating a latent window for asynchronous data extraction once context shifts to unhardened views
-
-Vector B: Conversational Context Exploitation (Implicit AI Data Trust)
-
-As documented during ecosystem interactions, when a user enters sensitive workflows, the AI system pipeline fails to execute context-aware exclusion boundaries. For example, during input tracking configurations, the multimodal processor successfully parses environmental inputs—even explicitly recording and validating real-time administrative entry states such as detecting highly critical banking authentication parameters. This creates an architectural paradox where the system actively processes the extreme sensitivity of the text but lacks the synchronous operational constraints to drop the frame memory capture, allowing it to persist directly into the remote cloud interaction repository.
-
-This conversational parsing paradox is further validated by the runtime behavior of the conversational assistant engine itself, which experiences total layout isolation blindness due to structural API rendering constraints while leaving background telemetry expose.
+Later diagnostics also showed:
 
 
-<img width="708" height="1031" alt="Screenshot_2026-06-04-15-06-44-34_680d03679600f7af0b4c700c6b270fe7(1)" src="https://github.com/user-attachments/assets/c09fdafe-7636-427f-b3de-331a22023226" />
+
+Media Projection:
+(com.google.android.googlequicksearchbox, uid=10116):
+TYPE_SCREEN_CAPTURE
+
+This demonstrates the presence of a MediaProjection-related screen-capture state associated with the Google application package during testing.
+
+However:
+
+The presence of a MediaProjection session alone does not establish that protected application pixels were delivered to the multimodal model.
+
+This distinction is important to the interpretation of the evidence.
+
+# V. SNAPSHOT AND TRANSITION OBSERVATIONS
+
+Testing demonstrated that different tasks could have different snapshot states.
+
+For example, during protected browsing transitions, a Chrome task was observed with:
 
 
-Figure 2 (AI Assistant Layer Contextual Blindness Realization on Maya App): Verified runtime dialogue session confirming total visual occlusion at the user interface presentation layer during an active Maya financial canvas transaction. While the conversational engine correctly self-reports absolute layout blindness due to system policy restrictions, the underlying Android framework concurrently fails to sever the background memory allocations, leaving the asynchronous telemetry stream actively exposed in the core processing layer.
+
+mIsRealSnapshot=false
+
+while a Gemini-associated task could independently show:
 
 
-<img width="720" height="1604" alt="Screenshot_2026-06-04-14-56-54-06_680d03679600f7af0b4c700c6b270fe7" src="https://github.com/user-attachments/assets/1e982234-90da-4211-9695-1bb25745db2c" />
+
+mIsRealSnapshot=true
+
+This demonstrates why mIsRealSnapshot cannot be treated as a direct indicator of whether Gemini can or cannot see protected content.
+
+The relevant security question is broader:
+
+Does the privacy state of the protected application remain consistently represented across the components participating in visual capture and multimodal processing?
+
+# VI. OBSERVED PRIVACY IMPACT
+
+The central security observation is not the WindowManager layer number or an individual snapshot field.
+
+It is the observed handling of sensitive application-derived visual information.
+
+During the documented testing:
 
 
-Figure 3 (Tier 0 Cloud Log Exfiltration Telemetry Verification on Uno Bank): Verified runtime cloud history interface tracking demonstrating the explicit exfiltration result of the framework defect. The conversational AI interaction logs explicitly state: "I see you're typing your password on the UNO Digital Bank login screen." This officially confirms that unmasked, highly confidential authentication credentials bypassed dynamic isolation hooks, resulting in cleartext processing inside a core Google TIER0 administrative zone (gemini.google.com).
 
-V. THE ENGINEERING SOLUTION: PROPOSED CONTEXT-AWARE PRIVACY INTERLOCK
+Sensitive application content
+          ↓
+Device visual state
+          ↓
+Gemini Live visual processing
+          ↓
+Assistant interpretation
 
-On June 29, 2026, under the formal legal protections of the executed Google Contributor License Agreement (Individual CLA) for the Android Open Source Project (AOSP), I submitted a structured structural remediation blueprint:
+Gemini Live was able to identify a sensitive financial value displayed within the tested application context.
 
-Remediation Logic (The Interlock Masking): The engineering proposal enforces a synchronous lifecycle verification hook within WindowManagerService.java. The moment a foreground activity window transition triggers an active FLAG_SECURE boundary, the operating system's hardware rasterizer engine must execute an absolute frame exclusion sequence.
+This establishes a visual privacy exposure under the tested conditions.
 
-The Execution Control: Even if a Layer 21000 system-privileged component maintains active background presentation tokens (TYPE_SCREEN_CAPTURE), the lower platform layer must enforce a dynamic restriction policy that forces SurfaceFlinger to output an absolute null-canvas or black buffer allocation (mIsRealSnapshot=false). This prevents any structural context retention prior to remote server transmissions.
+The behavior can reasonably be described as a form of visual eavesdropping across an application privacy boundary, because information originating inside a privacy-sensitive application context became available to an assistant processing path that the application was expected to restrict.
 
-B. Prior Art Audit: Monolithic Rule Enforcement Discrepancy (The 3rd Party vs. Tier 1 Paradox)
-The evaluation of this lifecycle synchronization failure exposes a critical policy enforcement double standard within the Android software ecosystem architecture:
+The public disclosure intentionally does not reproduce the actual sensitive value beyond the minimum evidence necessary to demonstrate the impact.
 
-Strict 3rd-Party Compliance Enforcement: The Google platform forces strict adherence to data isolation laws from all third-party developers. Standard non-Google overlay utilities—such as the Meta Messenger Bubble component—fully comply with platform constraints. The moment focus transitions into a secured canvas, the WindowManager subsystem forces these apps to undergo an immediate interlock masking routine (auto-hide / auto-pause). Failure to comply with these platform boundaries results in immediate removal from the application marketplace.
+# VII. CONVERSATIONAL / SESSION HISTORY
 
-The Monolithic Tier 1 Exception: However, Google's own production environment permits an architectural exception for its proprietary Tier 1 Application layer (Gemini Live running at Layer 21000). Despite being the regulatory author of the FLAG_SECURE protocol, Google permits its conversational asset to completely evade these operational boundaries, leaving an asynchronous TYPE_SCREEN_CAPTURE processing loop active in the background. This validates that the operating system vendor is failing to adhere to its own documented platform security restrictions, introducing systemic vulnerabilities under the guise of an invariant feature implementation.
+Where sensitive application-derived information subsequently appears in an associated conversational or session history, this creates an additional privacy concern.
 
-VI. CHRONOLOGICAL CROSS-COMPONENT ROUTING ANALYSIS (THE BUREAUCRATIC GRIDLOCK)
+The important distinction is:
 
-The software management tracking lifecycles inside the Google Buganizer interface illustrate a severe operational disconnect when assessing cross-component infrastructure defects:
-```text
-[May 25/26: Initial Submission]
-               │
-               ▼
-[Component 190951: Core Android OS Framework]
-               │  (Confirmed AOSP Flaw & CLA Binding)
-               ▼
-[Component 310426: Alphabet Application Layer]
-               │  (Product Team Deflection / Feature Script)
-               ▼
-[Component 889286: Trust & Safety Operational Team]
-                  (VRP Closed / Bureaucratic Loophole Closure)
-```
+The observation of sensitive content in conversation history establishes persistence of the observed information at the session/application layer; it does not by itself establish the underlying storage format or backend storage architecture.
 
-Platform Disconnect: The case was originally isolated under Component 190951 (Android Framework Core), where core developers immediately verified the ecosystem impact and created internal Blocker ID: 516437XXX.
+Therefore, this research does not classify the behavior as CWE-312 solely because the information appeared in conversation history.
 
-Siloed Deflection: On May 29, automated triage routing moved the case into Component 310426 (Alphabet Application Layer). Rather than evaluating the underlying platform failure, the product division assessed the bug through a narrow product utility framework, asserting that conversational overlay permanence was a standard, user-approved feature boundary.
+A separate cleartext-storage determination would require evidence establishing how that information is actually stored and protected.
 
-Triage Gridlock: The case was subsequently transferred into Component 889286 (Trust & Safety Team). Because the division evaluates security parameters strictly through an abuse or attacker-behavior model, they executed standard boilerplate closure templates, declaring the code integration anomaly "Out of Scope". This structural handling demonstrates a vital vulnerability management barrier where organizational boundaries hide a critical architectural platform zero-day.
-
-VI. (b) The Triage Gap: Analysis of Comment #18 (The Attack Scenario Trap)
-
-On July 21, 2026, the tracking workflow experienced a critical operational shift following an official response from the triage coordination layer (Comment #18). While the engineering component explicitly conceded execution replication—stating, “Our team has successfully reproduced the UI persistence behavior you described”—the program management layer concurrently attempted to deflect the security classification by enforcing an invalid threat modeling constraint:
-
-The Bureaucratic Hurdle: The triage team asserted that because the Gemini overlay operates under an explicit user opt-in ("Screen Awareness"), any subsequent data cache retention is categorized as user-consented behavior unless a specific exploit scenario is provided:
-"Could you please provide a realistic attack scenario demonstrating how a malicious third-party app or a remote attacker could leverage this persistent overlay to exfiltrate sensitive data... without the victim's active interaction and prior consent?"
-
-The Structural Pivot to Trust & Safety (Component 889286): Because the triage layer was hyper-focused on finding an active external "attacker" or "malicious third-party app" rather than auditing the underlying platform code defect, the case was administratively routed down to the Trust & Safety Team (Component 889286). T&S is an operational division that evaluates vulnerabilities strictly through an abuse/malware lens rather than a base-framework source-code compliance architecture.
-
-The Paradoxical Fallacy: This routing requirement represents a fundamental vulnerability management flaw. By demanding a multi-app exploit chain to qualify a core platform integration bug, the triage team completely ignored the fact that the platform vendor itself (Google) functions as the structural source of the vulnerability through its system-privileged application layer (Layer 21000). The failure of the framework to enforce local isolation boundaries (FLAG_SECURE) constitutes an architectural zero-day defect, regardless of whether a secondary localized exploit package is present to harvest the resulting plain-text cloud cache residue.
-
-VII. SUPPLEMENTAL GRAPHICAL EVIDENCE (TECHNICAL TELEMETRY)
-
-Figure 4 (WindowManager Core Buffer Telemetry): Verified adb shell dumpsys window windows output confirming a critical system privilege paradox. The com.google.android.googlequicksearchbox package operates persistently at mBaseLayer=21000 while concurrently maintaining an unmasked active cache allocation (mIsRealSnapshot=true) pointing directly into the android.hardware.HardwareBuffer layer during secure context states.
-
-<img width="1680" height="861" alt="VirtualBox_kali-linux-2026 1-virtualbox-amd64_30_08_2026_15_15_04" src="https://github.com/user-attachments/assets/db04e04f-1d98-4dce-b6ae-854fe97a378e" />
+The practical concern remains that:
 
 
-Figure 5 (Media Projection Component Lifecycle Tracking): Verified adb shell dumpsys media_projection sequence demonstrating cross-component enforcement failure. The system logs capture a transition from a clean framework state (Media Projection: null) directly into an active, background-persistent TYPE_SCREEN_CAPTURE payload session attached to uid=10116 during asynchronous foreground application context mutation.
+
+Protected application content
+          ↓
+Assistant processing
+          ↓
+Conversation/session representation
+
+can extend the privacy exposure beyond the original application screen.
+
+# VIII. TECHNICAL INTERPRETATION
+
+Cross-Component Privacy-State Synchronization
+
+The current working hypothesis is a possible capture/snapshot/processing state-reconciliation gap.
+
+The relevant components can be represented as:
 
 
-<img width="1680" height="861" alt="VirtualBox_kali-linux-2026 1-virtualbox-amd64_30_08_2026_15_16_34 - Copy" src="https://github.com/user-attachments/assets/6e1dd3f0-446c-43a1-ae43-8ac56a4f9f10" />
+
+Application privacy state
+          │
+          ▼
+WindowManager lifecycle state
+          │
+          ▼
+Capture / snapshot state
+          │
+          ▼
+Assistant visual-processing state
+          │
+          ▼
+Multimodal/session processing
+
+Each component can be individually legitimate while the interaction between their state transitions creates an inconsistent privacy boundary.
+
+The hypothesis is therefore:
+
+During certain application-state transitions, the privacy state of the protected application may not be synchronously reconciled across every downstream component capable of receiving visual or multimodal state.
+
+This is a root-cause hypothesis, not a confirmed AOSP implementation finding.
+
+# IX. WHY FLAG_SECURE / PRIVACY CONTROLS MATTER
+
+The purpose of a mechanism such as FLAG_SECURE is not merely to control screenshots initiated manually by the user.
+
+Its security purpose is to communicate that application content is sensitive and should not be exposed through applicable visual-capture paths.
+
+Therefore, when a protected application transitions between states:
 
 
-VIII. Direct Alignment with Emerging Security Frameworks (The Google Developer Blog Validation)
 
-The critical architectural deficit identifying the decoupled boundary execution between interface rendering and core AI processing layers is objectively validated by Google’s own platform announcements. On September 16, 2026, Google formally announced the integration deployment of "Agent Anomaly Detection" in Private Preview for the Gemini Agent Platform, as documented via the official Google Developers Blog.
+Protected
+   ↓
+Hidden / background
+   ↓
+Foreground transition
+   ↓
+Another application
 
-https://developers.googleblog.com/agent-anomaly-detection-now-in-private-preview-on-the-gemini-enterprise-agent-platform/
+the relevant capture and processing components should consistently respect the application's privacy state.
 
-According to official engineering releases, the introduction of this reasoning-based audit layer explicitly validates the core threat modeling principles documented in this case:
-Validation of Behavioral Risk: The enterprise platform release explicitly acknowledges a critical operational visibility gap, stating that “the real damage often happens in sessions that look benign on the surface... because nothing failed outright, the session clears the usual metrics-based evaluations without any second look.” This directly maps to the Interface Illusion (View.GONE) vector where standard lifecycle telemetry registers a closed interface, masking active hardware buffer execution underneath.
+The research therefore does not argue against system-level assistant overlays or multimodal processing.
 
-OWASP Agentic Top 10 Mapping: The mitigation capabilities deployed via Agent Anomaly Detection target specialized behavioral definitions including Identity and Privilege Abuse (ASI03) and Rogue Agents (ASI10). This structural industry classification serves as explicit platform-level confirmation that a system-privileged background application (Layer 21000) maintaining active token recording parameters (TYPE_SCREEN_CAPTURE) outside context bounds functions as a verified security architecture vulnerability rather than an invariant product capability. 
+It argues for consistent privacy-state enforcement when protected content is encountered.
+
+## X. REFERENCES & PRIOR ART
+
+Previous Android research has documented security issues involving system assistants and `FLAG_SECURE`.
+
+**CVE-2019-2103** — Android 9 Google Assistant `FLAG_SECURE` screenshot-permission bypass resulting in information disclosure.
+
+**Pankaj Upadhyay (2020)** — *OK Google, Bypass FLAG_SECURE* — prior research documenting the historical interaction between Google Assistant and Android's `FLAG_SECURE` protection.
+
+These references provide historical context for the present research. This case study does **not** claim that the current observation is the same vulnerability as CVE-2019-2103. The present investigation concerns the interaction between modern multimodal assistant processing, application privacy state, and Android framework lifecycle/capture state.
+
+# XI. DEVICE AND ANDROID COVERAGE
+
+Testing included multiple devices and Android versions:
+
+DeviceAndroid
 
 
-IX. CONCLUSION & CALL TO FRAMEWORK STANDARDIZATION
 
-This case study demonstrates that as multimodal AI architectures achieve deeper execution privileges within mobile operating systems, traditional user-consent models are insufficient to guard against low-level graphics buffer persistence. Enforcing true isolation boundaries requires the core platform layout manager to dynamically harmonize high-priority overlay execution with active foreground security constraints (FLAG_SECURE). Remediating this asynchronous synchronization gap within the Android Open Source Project (AOSP) is vital to preserving the fundamental contract of application-layer data confidentiality across the global Android ecosystem.
+TECNO
+
+Android 14
+
+OPPO
+
+Android 15
+
+Samsung
+
+Android 15
+
+Xiaomi
+
+Android 16
+
+The purpose of this testing was to determine whether the behavior was limited to one device implementation.
+
+Observed behavior varied depending on application, device, Android version, and application-level privacy implementation.
+
+Therefore, this research does not claim universal reproduction across every Android device.
+
+# XII. EVIDENCE BOUNDARIES
+
+Directly observed
+
+Gemini Live could identify sensitive visual information under the documented test conditions.
+
+Protected and non-protected application contexts behaved differently.
+
+Screen recordings and screenshots documented the original behavior.
+
+Android framework diagnostics later showed WindowManager snapshot states.
+
+mIsRealSnapshot=true and mIsRealSnapshot=false were both observed in different task contexts.
+
+MediaProjection-related screen-capture state was observed.
+
+Multiple application/task states could remain represented during transitions.
+
+Not directly established
+
+This research does not claim to establish:
+
+the exact AOSP source-code root cause;
+
+Gemini's internal capture implementation;
+
+Google's internal multimodal processing architecture;
+
+that mIsRealSnapshot=true itself causes the exposure;
+
+that every MediaProjection session exposes protected content;
+
+that every Android device is affected;
+
+that a particular WindowManager layer number represents unauthorized privilege;
+
+that Google silently implemented or removed a specific mitigation;
+
+the precise backend storage architecture of conversation history.
+
+# XIII. CWE CLASSIFICATION
+
+Primary — CWE-213
+
+CWE-213: Exposure of Sensitive Information Due to Incompatible Policies
+
+This is the primary classification because the documented behavior concerns the interaction of different privacy expectations and policies across components.
+
+The application expects protected content to remain restricted while another system-level component has legitimate visual-processing capabilities.
+
+The security concern therefore occurs at the policy interaction boundary.
+
+CWE-312
+
+Not assigned as a confirmed classification.
+
+Although sensitive information was observed in conversational/session context, the available evidence does not establish that the information was stored in cleartext in the technical sense required for CWE-312.
+
+The persistence concern is therefore documented separately rather than overstating the CWE classification.
+
+# XIV. SECURITY IMPACT
+
+The practical impact is:
+
+Sensitive visual information originating inside an application privacy boundary may become available to a system-level multimodal assistant and may subsequently appear in associated conversational/session processing.
+
+Potentially affected information could include:
+
+financial information;
+
+account information;
+
+personal information;
+
+authentication-related visual content;
+
+other sensitive data displayed by protected applications.
+
+The severity depends on:
+
+the application's privacy mechanism;
+
+the device and Android implementation;
+
+the assistant configuration;
+
+the specific lifecycle transition;
+
+the type of information displayed.
+
+# XV. MITIGATION CONSIDERATIONS
+
+A robust implementation should ensure that privacy state is consistently propagated across:
 
 
-## References & Prior Art
 
-* **Prior Research:** Pankaj Upadhyay (2020) – [*OK Google, Bypass FLAG_SECURE*](https://pankajupadhyay.in/2020/05/01/ok-google-bypass-flag-secure/)
+Application privacy state
+        ↓
+WindowManager state
+        ↓
+Capture / snapshot state
+        ↓
+Assistant visual input
+        ↓
+Multimodal processing
+        ↓
+Session/history handling
+
+Possible defensive principles include:
+
+Synchronous privacy-state reconciliation during foreground/background transitions.
+
+Invalidation or restriction of downstream visual state when protected content becomes active.
+
+Consistent enforcement of application-declared visual privacy controls across capture paths.
+
+Avoidance of stale protected visual state remaining available to downstream processing after a privacy transition.
+
+Independent validation of privacy state at the point where visual data enters multimodal processing.
+
+These are defensive design considerations, not claims about Google's current implementation.
+
+# XVI. CONCLUSION
+
+This research does not argue that Gemini Live or multimodal assistant functionality should be disabled.
+
+The central issue is the privacy boundary between protected application content and system-level visual processing.
+
+The strongest evidence is behavioral:
+
+Under the documented test conditions, Gemini Live was able to identify sensitive visual information displayed within a tested application context.
+
+Additional Android framework diagnostics provide supporting evidence for investigating how application privacy state, WindowManager snapshot state, capture state, and downstream multimodal processing interact during lifecycle transitions.
+
+The available evidence is consistent with a possible cross-component capture/snapshot/processing state-reconciliation gap.
+
+However, without access to AOSP internals, proprietary Gemini implementation details, or internal telemetry, the exact root cause cannot be conclusively established from the available evidence.
+
+The appropriate conclusion is therefore:
+
+The observed behavior represents a meaningful visual privacy exposure at the interaction boundary between application-level privacy controls and system-level multimodal processing. Further investigation should focus on ensuring that protected application state remains consistently enforced across the entire visual-processing lifecycle.
+
+# XVII. DISCLOSURE
+
+The original issue was reported through Google's vulnerability reporting process.
+
+The public research intentionally:
+
+omits credentials and OTPs;
+
+redacts sensitive account information;
+
+separates original reproduction evidence from later diagnostic investigation;
+
+distinguishes observed behavior from architectural hypothesis;
+
+does not publish proprietary or confidential vendor communications.
+
+Planned disclosure date: September 30, 2026.
