@@ -204,13 +204,17 @@ Gemini Live was able to identify a sensitive financial value displayed within th
 
 This establishes a visual privacy exposure under the tested conditions.
 
-The behavior can reasonably be described as a form of visual eavesdropping across an application privacy boundary, because information originating inside a privacy-sensitive application context became available to an assistant processing path that the application was expected to restrict.
+The behavior can reasonably be described as a form of visual privacy exposure across an application security boundary, because information originating inside a privacy-sensitive application context became available to an assistant processing path that the application was expected to restrict.
 
 The public disclosure intentionally does not reproduce the actual sensitive value beyond the minimum evidence necessary to demonstrate the impact.
 
 # VII. CONVERSATIONAL / SESSION HISTORY
 
-Where sensitive application-derived information subsequently appears in an associated conversational or session history, this creates an additional privacy concern.
+During the documented testing, authentication-related information, including password and OTP input, was observed in the downstream conversational/session context.
+
+Actual password values, OTP values, tokens, and other authentication secrets are intentionally omitted and redacted from this public repository.
+
+The public disclosure therefore documents the presence and type of sensitive authentication-related information without reproducing the underlying secret values.
 
 The important distinction is:
 
@@ -222,13 +226,13 @@ A separate cleartext-storage determination would require evidence establishing h
 
 The practical concern remains that:
 
-
-
+```text
 Protected application content
           ↓
 Assistant processing
           ↓
 Conversation/session representation
+```
 
 can extend the privacy exposure beyond the original application screen.
 
