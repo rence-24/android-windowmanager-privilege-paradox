@@ -2,6 +2,11 @@
 
 A Technical Case Study of Protected Application Content and Multimodal Assistant Processing
 
+Full Technical Write-up
+
+Read the complete long-form analysis and technical discussion on Medium:
+Android WindowManager Lifecycle Anomaly: Deconstructing FLAG_SECURE Boundary Analysis
+
 Author: Lawrence Bernales
 
 Initial Observation: May 25, 2026
