@@ -70,7 +70,7 @@ The strongest impact evidence is behavioral.
 
 During one documented reproduction, Gemini Live was able to identify a sensitive financial value displayed within the tested application context.
 
-For public disclosure, actual credentials, OTPs, authentication values, and other secrets are intentionally omitted.
+For public disclosure, actual credential and authentication values are intentionally omitted..
 
 B. Protected vs. Non-Protected Contexts
 
